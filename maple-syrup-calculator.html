@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maple Syrup Sap Calculator Canada — How Much Sap Per Litre</title>
+<meta name="description" content="Calculate how much maple sap you need to boil to make maple syrup. Adjust for your sap sugar content. Canadian maple syrup calculator in litres and gallons.">
+<link rel="canonical" href="https://ruralcalcs.com/maple-syrup-calculator.html">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fdf8f0;color:#2d2d2d;line-height:1.6}
+header{background:#1a472a;color:#fff;padding:1.4rem 1rem}
+header a{color:#a8d5b5;text-decoration:none;font-size:.9rem}
+header h1{font-size:1.7rem;font-weight:700;margin-top:.3rem}
+.wrap{max-width:680px;margin:2rem auto;padding:0 1.2rem}
+.card{background:#fff;border-radius:10px;padding:1.8rem;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:1.5rem}
+h2{font-size:1.15rem;font-weight:700;color:#1a472a;margin-bottom:1rem;border-bottom:2px solid #e8f5ee;padding-bottom:.5rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:500px){.row{grid-template-columns:1fr}}
+label{display:block;font-size:.85rem;font-weight:600;color:#555;margin-bottom:.3rem}
+input,select{width:100%;padding:.6rem .8rem;border:1.5px solid #d0ccc5;border-radius:6px;font-size:.95rem;background:#fafaf8}
+input:focus,select:focus{outline:none;border-color:#1a472a}
+.btn{background:#1a472a;color:#fff;border:none;padding:.75rem 2rem;border-radius:7px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;margin-top:.5rem}
+.btn:hover{background:#2d6a4f}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-top:1rem}
+.result-box{background:#f0f7f3;border-radius:8px;padding:1rem;text-align:center;border:1.5px solid #c3e6cb}
+.result-box.maple{background:#c8860a;color:#fff;border-color:#c8860a}
+.result-box .val{font-size:1.6rem;font-weight:700;display:block}
+.result-box .lbl{font-size:.75rem;opacity:.8;margin-top:.2rem}
+.sugar-bar{margin:1rem 0}
+.sugar-bar label{margin-bottom:.5rem}
+input[type=range]{-webkit-appearance:none;width:100%;height:8px;border-radius:4px;background:#d0ccc5;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#1a472a;cursor:pointer}
+.sugar-val{text-align:center;font-size:1.3rem;font-weight:700;color:#1a472a;margin-top:.3rem}
+.info-box{background:#fff8e1;border-radius:8px;padding:1rem 1.2rem;border-left:4px solid #c8860a;font-size:.88rem;color:#5a4000;margin-top:1rem}
+nav{margin-top:2rem;padding-top:1rem;border-top:1px solid #e5e0d8;font-size:.88rem}
+nav a{color:#1a472a;text-decoration:none;margin-right:1rem}
+</style>
+</head>
+<body>
+<header>
+  <a href="/">← RuralCalcs</a>
+  <h1>🍯 Maple Syrup Sap Calculator</h1>
+</header>
+<div class="wrap">
+  <div class="card">
+    <h2>Your Sap &amp; Syrup Goals</h2>
+    <div class="sugar-bar">
+      <label>Sap sugar content (Brix %): <span class="sugar-val" id="brixVal">2.0%</span></label>
+      <input type="range" id="brix" min="1.0" max="5.0" step="0.1" value="2.0" oninput="updateBrix()">
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;color:#888"><span>1.0% (thin)</span><span>2.0% (avg)</span><span>5.0% (very sweet)</span></div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Target syrup production</label>
+        <input type="number" id="syrupAmt" value="10" min="0.5" step="0.5">
+      </div>
+      <div>
+        <label>Unit</label>
+        <select id="syrupUnit">
+          <option value="1" selected>Litres of syrup</option>
+          <option value="3.785">US gallons of syrup</option>
+          <option value="4.546">Imperial gallons of syrup</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Number of taps</label>
+        <input type="number" id="taps" value="20" min="1" max="5000">
+      </div>
+      <div>
+        <label>Avg sap per tap per day (L)</label>
+        <input type="number" id="sapPerTap" value="2.5" min="0.5" max="10" step="0.5">
+      </div>
+    </div>
+    <button class="btn" onclick="calculate()">Calculate</button>
+  </div>
+
+  <div class="card" id="results" style="display:none">
+    <h2>Your Results</h2>
+    <div class="result-grid">
+      <div class="result-box maple">
+        <span class="val" id="rSapNeeded">—</span>
+        <div class="lbl">Litres of sap needed</div>
+      </div>
+      <div class="result-box">
+        <span class="val" id="rRatio">—</span>
+        <div class="lbl">Sap-to-syrup ratio</div>
+      </div>
+      <div class="result-box">
+        <span class="val" id="rDays">—</span>
+        <div class="lbl">Days to collect sap</div>
+      </div>
+      <div class="result-box">
+        <span class="val" id="rSapDay">—</span>
+        <div class="lbl">Litres collected / day</div>
+      </div>
+    </div>
+    <div class="info-box" id="infoBox"></div>
+  </div>
+
+  <div class="card">
+    <h2>The Rule of 86 (Quick Method)</h2>
+    <p style="font-size:.92rem;color:#555">Divide 86 by your sap's sugar content percentage to get the ratio. At 2% sugar: 86 ÷ 2 = <strong>43 litres of sap per litre of syrup</strong>. At 2.5% sugar: 86 ÷ 2.5 = 34.4 litres. Finished maple syrup is 66° Brix (66% sugar). A refractometer or hydrometer is the best way to measure your sap's sugar content.</p>
+  </div>
+  <nav>
+    <a href="/wood-heat-cost-calculator.html">Wood Heat Cost</a>
+    <a href="/beam-calculator.html">Beam Calculator</a>
+    <a href="/">All Calculators</a>
+  </nav>
+</div>
+<script>
+function updateBrix(){
+  const v=parseFloat(document.getElementById('brix').value).toFixed(1);
+  document.getElementById('brixVal').textContent=v+'%';
+}
+function calculate(){
+  const brix=parseFloat(document.getElementById('brix').value)||2.0;
+  const syrupAmt=parseFloat(document.getElementById('syrupAmt').value)||10;
+  const syrupUnit=parseFloat(document.getElementById('syrupUnit').value)||1;
+  const taps=parseFloat(document.getElementById('taps').value)||20;
+  const sapPerTap=parseFloat(document.getElementById('sapPerTap').value)||2.5;
+
+  const syrupL=syrupAmt*syrupUnit;
+  const ratio=86/brix;
+  const sapNeeded=syrupL*ratio;
+  const sapPerDay=taps*sapPerTap;
+  const days=sapNeeded/sapPerDay;
+
+  document.getElementById('rSapNeeded').textContent=sapNeeded.toFixed(0)+'L';
+  document.getElementById('rRatio').textContent=ratio.toFixed(1)+':1';
+  document.getElementById('rDays').textContent=days.toFixed(1);
+  document.getElementById('rSapDay').textContent=sapPerDay.toFixed(0)+'L';
+
+  let advice='';
+  if(brix<1.5)advice='⚠️ Your sap is quite thin — below 1.5% Brix. You\'ll need a lot of boiling. Check your trees for stress or wait for colder nights.';
+  else if(brix>=3.0)advice='🍁 Excellent sap! Above 3% Brix is rare and means much less boiling. Your trees are producing exceptional sap this season.';
+  else advice=`🍁 At ${brix}% Brix, you need roughly ${ratio.toFixed(0)} litres of sap per litre of finished syrup. Finished syrup is done at 104°C (219°F) or 66° Brix.`;
+  document.getElementById('infoBox').textContent=advice;
+  document.getElementById('results').style.display='block';
+}
+</script>
+</body>
+</html>
