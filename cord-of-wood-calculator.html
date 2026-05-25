@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cord of Wood Calculator Canada — Face Cord, Bush Cord, Cubic Metres</title>
+<meta name="description" content="Convert between cords, face cords, bush cords, and cubic metres. Check if you got a full cord. Canadian firewood volume calculator.">
+<link rel="canonical" href="https://ruralcalcs.com/cord-of-wood-calculator.html">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fdf8f0;color:#2d2d2d;line-height:1.6}
+header{background:#1a472a;color:#fff;padding:1.4rem 1rem}
+header a{color:#a8d5b5;text-decoration:none;font-size:.9rem}
+header h1{font-size:1.7rem;font-weight:700;margin-top:.3rem}
+.wrap{max-width:680px;margin:2rem auto;padding:0 1.2rem}
+.card{background:#fff;border-radius:10px;padding:1.8rem;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:1.5rem}
+h2{font-size:1.15rem;font-weight:700;color:#1a472a;margin-bottom:1rem;border-bottom:2px solid #e8f5ee;padding-bottom:.5rem}
+.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:.5rem 1.2rem;border-radius:20px;border:2px solid #d0ccc5;background:#fafaf8;font-size:.9rem;cursor:pointer;font-weight:600;transition:all .15s}
+.tab.active{background:#1a472a;color:#fff;border-color:#1a472a}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:500px){.row{grid-template-columns:1fr}}
+label{display:block;font-size:.85rem;font-weight:600;color:#555;margin-bottom:.3rem}
+input,select{width:100%;padding:.6rem .8rem;border:1.5px solid #d0ccc5;border-radius:6px;font-size:.95rem;background:#fafaf8}
+input:focus,select:focus{outline:none;border-color:#1a472a}
+.btn{background:#1a472a;color:#fff;border:none;padding:.75rem 2rem;border-radius:7px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;margin-top:.5rem}
+.btn:hover{background:#2d6a4f}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1rem;margin-top:1rem}
+.result-box{background:#f0f7f3;border-radius:8px;padding:1rem;text-align:center;border:1.5px solid #c3e6cb}
+.result-box.highlight{background:#1a472a;color:#fff;border-color:#1a472a}
+.result-box .val{font-size:1.5rem;font-weight:700;display:block}
+.result-box .lbl{font-size:.75rem;opacity:.75;margin-top:.2rem}
+.verdict{border-radius:8px;padding:1rem 1.2rem;margin-top:1rem;font-weight:600;font-size:1rem}
+.verdict.good{background:#e8f5ee;color:#1a472a;border:1.5px solid #c3e6cb}
+.verdict.bad{background:#fde8e8;color:#b91c1c;border:1.5px solid #f5c6c6}
+.verdict.ok{background:#fff8e1;color:#92660a;border:1.5px solid #ffe082}
+.ref-table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.5rem}
+.ref-table th{background:#1a472a;color:#fff;padding:.5rem .8rem;text-align:left}
+.ref-table td{padding:.5rem .8rem;border-bottom:1px solid #e8e4df}
+.ref-table tr:nth-child(even) td{background:#f5f2ee}
+nav{margin-top:2rem;padding-top:1rem;border-top:1px solid #e5e0d8;font-size:.88rem}
+nav a{color:#1a472a;text-decoration:none;margin-right:1rem}
+</style>
+</head>
+<body>
+<header>
+  <a href="/">← RuralCalcs</a>
+  <h1>📐 Cord of Wood Calculator</h1>
+</header>
+<div class="wrap">
+  <div class="card">
+    <h2>What do you want to calculate?</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('stack')">Check a stack</div>
+      <div class="tab" onclick="showTab('convert')">Convert units</div>
+      <div class="tab" onclick="showTab('check')">Did I get a full cord?</div>
+    </div>
+
+    <!-- Tab 1: measure a stack -->
+    <div class="tab-content active" id="tab-stack">
+      <p style="font-size:.88rem;color:#666;margin-bottom:1rem">Enter the dimensions of your wood pile to see how many cords it is.</p>
+      <div class="row">
+        <div><label>Length (ft)</label><input type="number" id="sLen" value="8" min="1"></div>
+        <div><label>Height (ft)</label><input type="number" id="sHt" value="4" min="1"></div>
+        <div><label>Log length (in)</label>
+          <select id="sLog">
+            <option value="16">16" (standard)</option>
+            <option value="12">12"</option>
+            <option value="24">24"</option>
+            <option value="48">48" (4 ft)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="calcStack()">Calculate</button>
+      <div id="stackResult"></div>
+    </div>
+
+    <!-- Tab 2: convert -->
+    <div class="tab-content" id="tab-convert">
+      <div class="row" style="grid-template-columns:1fr 1fr">
+        <div><label>Amount</label><input type="number" id="cvAmt" value="1" min="0.1" step="0.1"></div>
+        <div><label>From unit</label>
+          <select id="cvFrom">
+            <option value="128">Bush cord (128 cu ft)</option>
+            <option value="42.67">Face cord / rick (16" logs)</option>
+            <option value="64">Half cord</option>
+            <option value="3.625">Cubic metre (stacked)</option>
+            <option value="1">Cubic foot</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn" onclick="calcConvert()">Convert</button>
+      <div id="convertResult"></div>
+    </div>
+
+    <!-- Tab 3: did I get a full cord? -->
+    <div class="tab-content" id="tab-check">
+      <p style="font-size:.88rem;color:#666;margin-bottom:1rem">You ordered a cord. Measure what you got and find out.</p>
+      <div class="row">
+        <div><label>Pile length (ft)</label><input type="number" id="chkLen" value="8" min="1"></div>
+        <div><label>Pile height (ft)</label><input type="number" id="chkHt" value="4" min="1"></div>
+        <div><label>Log length (in)</label>
+          <select id="chkLog">
+            <option value="16" selected>16"</option>
+            <option value="12">12"</option>
+            <option value="24">24"</option>
+            <option value="48">48"</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label>What did you pay? ($)</label>
+        <input type="number" id="chkPrice" value="350" min="0">
+      </div>
+      <button class="btn" onclick="calcCheck()">Check My Cord</button>
+      <div id="checkResult"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Firewood Volume Reference</h2>
+    <table class="ref-table">
+      <thead><tr><th>Unit</th><th>Cu ft</th><th>Cu metres</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bush cord</strong></td><td>128</td><td>3.63</td><td>Standard full cord — 4×4×8 ft</td></tr>
+        <tr><td><strong>Face cord</strong></td><td>42.7</td><td>1.21</td><td>4×8 ft face, 16" logs — ⅓ of a cord</td></tr>
+        <tr><td><strong>Half cord</strong></td><td>64</td><td>1.81</td><td>4×4×4 ft or 4×8 ft × 2 ft</td></tr>
+        <tr><td><strong>Pickup truck load</strong></td><td>~40–50</td><td>~1.1–1.4</td><td>Varies — always measure!</td></tr>
+        <tr><td><strong>Stacked cubic metre</strong></td><td>35.3</td><td>1.0</td><td>Used in Quebec and Europe</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <nav>
+    <a href="/cords-needed-calculator.html">Cords Needed</a>
+    <a href="/wood-heat-cost-calculator.html">Heat Cost</a>
+    <a href="/">All Calculators</a>
+  </nav>
+</div>
+<script>
+function showTab(id){
+  document.querySelectorAll('.tab,.tab-content').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+function calcStack(){
+  const len=parseFloat(document.getElementById('sLen').value)||8;
+  const ht=parseFloat(document.getElementById('sHt').value)||4;
+  const log=parseFloat(document.getElementById('sLog').value)||16;
+  const cuft=len*ht*(log/12);
+  const cords=cuft/128;
+  const faceCords=cuft/42.67;
+  const m3=cuft/35.315;
+  document.getElementById('stackResult').innerHTML=`
+    <div class="result-grid" style="margin-top:1rem">
+      <div class="result-box highlight"><span class="val">${cords.toFixed(2)}</span><div class="lbl">Bush cords</div></div>
+      <div class="result-box"><span class="val">${faceCords.toFixed(2)}</span><div class="lbl">Face cords</div></div>
+      <div class="result-box"><span class="val">${m3.toFixed(2)}</span><div class="lbl">Cubic metres</div></div>
+      <div class="result-box"><span class="val">${cuft.toFixed(0)}</span><div class="lbl">Cubic feet</div></div>
+    </div>`;
+}
+function calcConvert(){
+  const amt=parseFloat(document.getElementById('cvAmt').value)||1;
+  const fromCuFt=parseFloat(document.getElementById('cvFrom').value)||128;
+  const cuft=amt*fromCuFt;
+  const cords=cuft/128;
+  const face=cuft/42.67;
+  const half=cuft/64;
+  const m3=cuft/35.315;
+  document.getElementById('convertResult').innerHTML=`
+    <div class="result-grid" style="margin-top:1rem">
+      <div class="result-box highlight"><span class="val">${cords.toFixed(2)}</span><div class="lbl">Bush cords</div></div>
+      <div class="result-box"><span class="val">${face.toFixed(2)}</span><div class="lbl">Face cords</div></div>
+      <div class="result-box"><span class="val">${half.toFixed(2)}</span><div class="lbl">Half cords</div></div>
+      <div class="result-box"><span class="val">${m3.toFixed(2)}</span><div class="lbl">Cubic metres</div></div>
+    </div>`;
+}
+function calcCheck(){
+  const len=parseFloat(document.getElementById('chkLen').value)||8;
+  const ht=parseFloat(document.getElementById('chkHt').value)||4;
+  const log=parseFloat(document.getElementById('chkLog').value)||16;
+  const paid=parseFloat(document.getElementById('chkPrice').value)||350;
+  const cuft=len*ht*(log/12);
+  const cords=cuft/128;
+  const pct=Math.round(cords*100);
+  let cls,msg;
+  if(cords>=0.95){cls='good';msg=`✅ Looks like a full cord (${pct}%). You got what you paid for.`;}
+  else if(cords>=0.80){cls='ok';msg=`⚠️ You got about ${pct}% of a cord. Ask your supplier — may be stacking variation.`;}
+  else{cls='bad';msg=`❌ You got only ${pct}% of a cord. That's significantly short — worth calling your supplier.`;}
+  const fairPrice=(paid/cords).toFixed(0);
+  document.getElementById('checkResult').innerHTML=`
+    <div class="result-grid" style="margin-top:1rem">
+      <div class="result-box highlight"><span class="val">${cords.toFixed(2)}</span><div class="lbl">Cords received</div></div>
+      <div class="result-box"><span class="val">${cuft.toFixed(0)}</span><div class="lbl">Cubic feet</div></div>
+      <div class="result-box"><span class="val">$${fairPrice}</span><div class="lbl">Fair price if full cord</div></div>
+    </div>
+    <div class="verdict ${cls}" style="margin-top:1rem">${msg}</div>`;
+}
+</script>
+</body>
+</html>
