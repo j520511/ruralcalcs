@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumber Beam Size Calculator Canada — Floor Beams, Headers, Ridge Beams</title>
+<meta name="description" content="Calculate lumber beam sizes for Canadian construction. Find the right 2x beam or LVL size for floor beams, ridge beams, and headers based on span and load.">
+<link rel="canonical" href="https://ruralcalcs.com/beam-calculator.html">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fdf8f0;color:#2d2d2d;line-height:1.6}
+header{background:#1a472a;color:#fff;padding:1.4rem 1rem}
+header a{color:#a8d5b5;text-decoration:none;font-size:.9rem}
+header h1{font-size:1.7rem;font-weight:700;margin-top:.3rem}
+.wrap{max-width:720px;margin:2rem auto;padding:0 1.2rem}
+.card{background:#fff;border-radius:10px;padding:1.8rem;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:1.5rem}
+h2{font-size:1.15rem;font-weight:700;color:#1a472a;margin-bottom:1rem;border-bottom:2px solid #e8f5ee;padding-bottom:.5rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:500px){.row{grid-template-columns:1fr}}
+label{display:block;font-size:.85rem;font-weight:600;color:#555;margin-bottom:.3rem}
+input,select{width:100%;padding:.6rem .8rem;border:1.5px solid #d0ccc5;border-radius:6px;font-size:.95rem;background:#fafaf8}
+input:focus,select:focus{outline:none;border-color:#1a472a}
+.btn{background:#1a472a;color:#fff;border:none;padding:.75rem 2rem;border-radius:7px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;margin-top:.5rem}
+.btn:hover{background:#2d6a4f}
+.result-box-main{background:#1a472a;color:#fff;border-radius:10px;padding:1.5rem;text-align:center;margin-bottom:1rem;display:none}
+.result-box-main.show{display:block}
+.result-box-main .size{font-size:2.5rem;font-weight:700}
+.result-box-main .desc{font-size:.95rem;opacity:.85;margin-top:.3rem}
+.options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.8rem;margin-top:1rem}
+.opt-box{background:#f0f7f3;border-radius:8px;padding:.9rem;text-align:center;border:1.5px solid #c3e6cb}
+.opt-box .sz{font-size:1.15rem;font-weight:700;color:#1a472a}
+.opt-box .ot{font-size:.75rem;color:#666;margin-top:.2rem}
+.warning{background:#fff8e1;border-radius:8px;padding:1rem 1.2rem;border-left:4px solid #c8860a;font-size:.85rem;color:#5a4000;margin-top:1rem}
+.disclaimer{background:#fde8e8;border-radius:8px;padding:1rem 1.2rem;border-left:4px solid #e53e3e;font-size:.85rem;color:#822727;margin-top:1rem}
+nav{margin-top:2rem;padding-top:1rem;border-top:1px solid #e5e0d8;font-size:.88rem}
+nav a{color:#1a472a;text-decoration:none;margin-right:1rem}
+</style>
+</head>
+<body>
+<header>
+  <a href="/">← RuralCalcs</a>
+  <h1>🔨 Lumber Beam Calculator</h1>
+</header>
+<div class="wrap">
+  <div class="card">
+    <h2>Beam Parameters</h2>
+    <div class="row">
+      <div>
+        <label>Beam type</label>
+        <select id="beamType" onchange="updateUI()">
+          <option value="floor">Floor beam / girder</option>
+          <option value="header">Door/window header</option>
+          <option value="ridge">Ridge beam (non-structural)</option>
+          <option value="deck">Deck beam</option>
+        </select>
+      </div>
+      <div>
+        <label>Clear span (ft)</label>
+        <input type="number" id="span" value="12" min="2" max="40" step="0.5">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Tributary width (ft)</label>
+        <input type="number" id="tribWidth" value="8" min="1" max="30" step="0.5">
+        <small style="color:#888;font-size:.78rem">How far the joists span on each side</small>
+      </div>
+      <div>
+        <label>Load type</label>
+        <select id="loadType">
+          <option value="40">Residential floor (40 psf live)</option>
+          <option value="30">Deck (30 psf live)</option>
+          <option value="20">Attic storage (20 psf live)</option>
+          <option value="60">Heavy / commercial (60 psf)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Dead load (psf)</label>
+        <select id="deadLoad">
+          <option value="10">10 psf (light framing)</option>
+          <option value="15" selected>15 psf (typical floor)</option>
+          <option value="20">20 psf (tile/heavy floor)</option>
+        </select>
+      </div>
+      <div>
+        <label>Species / grade</label>
+        <select id="species">
+          <option value="1600000">SPF #2 (Spruce-Pine-Fir)</option>
+          <option value="1700000" selected>Douglas Fir #2</option>
+          <option value="1500000">Hem-Fir #2</option>
+          <option value="1800000">Douglas Fir #1</option>
+          <option value="2000000">LVL (1.9E)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" onclick="calculate()">Size My Beam</button>
+  </div>
+
+  <div class="result-box-main" id="mainResult">
+    <div class="size" id="recSize">—</div>
+    <div class="desc" id="recDesc"></div>
+  </div>
+
+  <div class="card" id="optionsCard" style="display:none">
+    <h2>Equivalent Options</h2>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="warning">⚠️ These are simplified estimates based on basic beam bending formulas (L/360 deflection limit). Always verify with a structural engineer or your local building official. Snow loads, point loads, and site-specific conditions are not included.</div>
+  </div>
+
+  <div class="card">
+    <h2>Canadian Building Code Notes</h2>
+    <p style="font-size:.9rem;color:#555;margin-bottom:.7rem">The NBC (National Building Code of Canada) requires beams to be sized by a qualified designer for loads outside of prescriptive tables. The <strong>NBC Part 9</strong> span tables cover most house framing; use them as your primary reference for code compliance.</p>
+    <ul style="font-size:.9rem;color:#555;padding-left:1.2rem">
+      <li>Deflection limit: L/360 for floors, L/240 for roofs</li>
+      <li>Snow loads vary significantly by region (reference NBC Appendix C or local authority)</li>
+      <li>Always check with your local building department before construction</li>
+    </ul>
+  </div>
+  <nav>
+    <a href="/cord-of-wood-calculator.html">Cord Calculator</a>
+    <a href="/cords-needed-calculator.html">Cords Needed</a>
+    <a href="/">All Calculators</a>
+  </nav>
+</div>
+<script>
+// Beam sizing using simple bending moment: M = wL²/8, S = M/Fb, I for deflection
+// Returns minimum section modulus S (in³) and moment of inertia I (in⁴)
+const LUMBER={
+  '2x6':{b:1.5,d:5.5},'2x8':{b:1.5,d:7.25},'2x10':{b:1.5,d:9.25},'2x12':{b:1.5,d:11.25},
+  '3x8':{b:2.5,d:7.25},'3x10':{b:2.5,d:9.25},'3x12':{b:2.5,d:11.25},
+  '4x8':{b:3.5,d:7.25},'4x10':{b:3.5,d:9.25},'4x12':{b:3.5,d:11.25},
+  '3-2x8':{b:4.5,d:7.25},'3-2x10':{b:4.5,d:9.25},'3-2x12':{b:4.5,d:11.25},
+  '4-2x10':{b:6.0,d:9.25},'4-2x12':{b:6.0,d:11.25},
+  'LVL 3.5"x9.5"':{b:3.5,d:9.5},'LVL 3.5"x11.25"':{b:3.5,d:11.25},'LVL 3.5"x14"':{b:3.5,d:14.0},
+  'LVL 5.25"x9.5"':{b:5.25,d:9.5},'LVL 5.25"x11.25"':{b:5.25,d:11.25},'LVL 5.25"x14"':{b:5.25,d:14.0},
+};
+function sectionProps(b,d){return{S:b*d*d/6,I:b*d*d*d/12};}
+function calculate(){
+  const span=parseFloat(document.getElementById('span').value)||12;
+  const trib=parseFloat(document.getElementById('tribWidth').value)||8;
+  const live=parseFloat(document.getElementById('loadType').value)||40;
+  const dead=parseFloat(document.getElementById('deadLoad').value)||15;
+  const E=parseFloat(document.getElementById('species').value)||1700000;
+  const Fb=E===2000000?2600:1050; // psi bending stress
+
+  const L=span*12; // inches
+  const w=(live+dead)*trib/12; // lbs/in
+  const M=w*L*L/8; // in-lbs
+  const Sreq=M/Fb; // in³
+  const Ireq=(5*w*L*L*L*L)/(384*E*0.03333); // L/360 deflection: Δ=L/360
+
+  // Find passing options
+  const passing=[];
+  for(const[name,dim] of Object.entries(LUMBER)){
+    const{S,I}=sectionProps(dim.b,dim.d);
+    if(S>=Sreq&&I>=Ireq)passing.push({name,S,I,b:dim.b,d:dim.d});
+  }
+  passing.sort((a,b)=>a.b*a.d-(b.b*b.d));
+
+  const rec=passing[0];
+  if(rec){
+    document.getElementById('recSize').textContent=rec.name;
+    document.getElementById('recDesc').textContent=`Minimum size for ${span}' span, ${trib}' tributary width, ${live} psf live + ${dead} psf dead`;
+    document.getElementById('mainResult').className='result-box-main show';
+    const altHtml=passing.slice(1,5).map(o=>`<div class="opt-box"><div class="sz">${o.name}</div><div class="ot">S=${o.S.toFixed(0)} in³ | I=${o.I.toFixed(0)} in⁴</div></div>`).join('');
+    document.getElementById('optionsGrid').innerHTML=altHtml||'<p style="color:#888;font-size:.9rem">No other standard sizes qualify for this span.</p>';
+    document.getElementById('optionsCard').style.display='block';
+  } else {
+    document.getElementById('recSize').textContent='Custom design needed';
+    document.getElementById('recDesc').textContent='This span/load exceeds standard lumber tables. Consult a structural engineer.';
+    document.getElementById('mainResult').className='result-box-main show';
+    document.getElementById('optionsCard').style.display='none';
+  }
+}
+</script>
+</body>
+</html>
