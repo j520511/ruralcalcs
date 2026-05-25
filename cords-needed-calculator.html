@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Much Firewood Do I Need Canada — Cords Needed Calculator</title>
+<meta name="description" content="Calculate how many cords of firewood you need for winter in Canada. Based on your home size, insulation, climate zone, and wood species.">
+<link rel="canonical" href="https://ruralcalcs.com/cords-needed-calculator.html">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fdf8f0;color:#2d2d2d;line-height:1.6}
+header{background:#1a472a;color:#fff;padding:1.4rem 1rem}
+header a{color:#a8d5b5;text-decoration:none;font-size:.9rem}
+header h1{font-size:1.7rem;font-weight:700;margin-top:.3rem}
+.wrap{max-width:680px;margin:2rem auto;padding:0 1.2rem}
+.card{background:#fff;border-radius:10px;padding:1.8rem;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:1.5rem}
+h2{font-size:1.15rem;font-weight:700;color:#1a472a;margin-bottom:1rem;border-bottom:2px solid #e8f5ee;padding-bottom:.5rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+@media(max-width:500px){.row{grid-template-columns:1fr}}
+label{display:block;font-size:.85rem;font-weight:600;color:#555;margin-bottom:.3rem}
+input,select{width:100%;padding:.6rem .8rem;border:1.5px solid #d0ccc5;border-radius:6px;font-size:.95rem;background:#fafaf8}
+input:focus,select:focus{outline:none;border-color:#1a472a}
+.btn{background:#1a472a;color:#fff;border:none;padding:.75rem 2rem;border-radius:7px;font-size:1rem;font-weight:600;cursor:pointer;width:100%;margin-top:.5rem}
+.btn:hover{background:#2d6a4f}
+.result-big{background:#1a472a;color:#fff;border-radius:10px;padding:2rem;text-align:center;margin-bottom:1.5rem;display:none}
+.result-big.show{display:block}
+.result-big .num{font-size:4rem;font-weight:700;line-height:1}
+.result-big .unit{font-size:1.1rem;opacity:.8;margin-top:.4rem}
+.result-big .range{font-size:.95rem;opacity:.75;margin-top:.5rem}
+.breakdown{font-size:.88rem}
+.breakdown table{width:100%;border-collapse:collapse;margin-top:.5rem}
+.breakdown td{padding:.4rem .6rem;border-bottom:1px solid #e8e4df}
+.breakdown tr:last-child td{border:none;font-weight:700}
+nav{margin-top:2rem;padding-top:1rem;border-top:1px solid #e5e0d8;font-size:.88rem}
+nav a{color:#1a472a;text-decoration:none;margin-right:1rem}
+</style>
+</head>
+<body>
+<header>
+  <a href="/">← RuralCalcs</a>
+  <h1>🏠 Cords Needed Calculator</h1>
+</header>
+<div class="wrap">
+  <div class="card">
+    <h2>Your Home &amp; Heating Setup</h2>
+    <div class="row">
+      <div>
+        <label>Heated floor area (sq ft)</label>
+        <input type="number" id="sqft" value="1500" min="200" max="6000">
+      </div>
+      <div>
+        <label>Ceiling height</label>
+        <select id="ceiling">
+          <option value="8" selected>Standard (8 ft)</option>
+          <option value="9">9 ft</option>
+          <option value="10">10 ft</option>
+          <option value="12">12 ft (open concept)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Insulation / age</label>
+        <select id="insulation">
+          <option value="0.7">Very well insulated (post-2000, R-40+)</option>
+          <option value="1.0" selected>Average (1980–2000)</option>
+          <option value="1.4">Older / drafty (pre-1975)</option>
+          <option value="1.8">Log cabin / poor insulation</option>
+        </select>
+      </div>
+      <div>
+        <label>Canadian climate zone</label>
+        <select id="zone">
+          <option value="0.65">Zone 4 — Southern BC, Lower Mainland</option>
+          <option value="0.80">Zone 5 — Southern ON, BC interior</option>
+          <option value="1.00" selected>Zone 6 — Most of ON, QC, Prairies</option>
+          <option value="1.25">Zone 7 — Northern ON, QC, AB, SK</option>
+          <option value="1.60">Zone 8 — Northern Canada, YK, NWT</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Wood is primary heat source?</label>
+        <select id="primary">
+          <option value="1.0" selected>Yes — sole heat source</option>
+          <option value="0.70">Mostly — backup furnace for cold nights</option>
+          <option value="0.45">Supplement — wood is secondary</option>
+        </select>
+      </div>
+      <div>
+        <label>Stove efficiency</label>
+        <select id="stoveEff">
+          <option value="0.80">EPA certified stove (80%)</option>
+          <option value="0.70" selected>Modern insert (70%)</option>
+          <option value="0.55">Older stove (55%)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Wood species</label>
+        <select id="species">
+          <option value="30.7">Sugar Maple</option>
+          <option value="30.2">Yellow Birch</option>
+          <option value="29.3">White Ash</option>
+          <option value="22.4">White Birch</option>
+          <option value="17.8">White Spruce</option>
+          <option value="20.6" selected>Mixed Hardwood (avg)</option>
+        </select>
+      </div>
+      <div>
+        <label>Heating season length</label>
+        <select id="season">
+          <option value="5">5 months (Oct–Feb)</option>
+          <option value="6" selected>6 months (Oct–Mar)</option>
+          <option value="7">7 months (Sep–Mar)</option>
+          <option value="8">8 months (Sep–Apr)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" onclick="calculate()">Calculate Cords Needed</button>
+  </div>
+
+  <div class="result-big" id="resultBig">
+    <div class="num" id="cordsNum">—</div>
+    <div class="unit">cords of firewood per year</div>
+    <div class="range" id="cordsRange"></div>
+  </div>
+
+  <div class="card" id="breakdown" style="display:none">
+    <h2>How We Got There</h2>
+    <div class="breakdown">
+      <table id="breakdownTable"></table>
+    </div>
+  </div>
+  <nav>
+    <a href="/wood-heat-cost-calculator.html">Heat Cost</a>
+    <a href="/cord-of-wood-calculator.html">Cord Volume</a>
+    <a href="/firewood-btu-calculator.html">BTU by Species</a>
+    <a href="/">All Calculators</a>
+  </nav>
+</div>
+<script>
+function calculate(){
+  const sqft=parseFloat(document.getElementById('sqft').value)||1500;
+  const ceiling=parseFloat(document.getElementById('ceiling').value)||8;
+  const insul=parseFloat(document.getElementById('insulation').value)||1.0;
+  const zone=parseFloat(document.getElementById('zone').value)||1.0;
+  const primary=parseFloat(document.getElementById('primary').value)||1.0;
+  const stoveEff=parseFloat(document.getElementById('stoveEff').value)||0.70;
+  const gjCord=parseFloat(document.getElementById('species').value)||20.6;
+  const season=parseFloat(document.getElementById('season').value)||6;
+
+  // Base demand: ~50 W/m2 for average Canadian home, scaled by zone, insulation, ceiling, season
+  const sqm=sqft*0.0929;
+  const vol=sqm*ceiling*0.3048;
+  // Heat demand in GJ: base rule ~0.05 GJ/m2/month for zone 6 average insulation
+  const baseGJMonth=0.05*sqm*insul*zone*(ceiling/8);
+  const totalGJ=baseGJMonth*season*primary;
+  // Cords = GJ demanded / (GJ per cord * stove eff)
+  const usefulGJ=gjCord*0.85*stoveEff; // assume 85% seasoned
+  const cords=totalGJ/usefulGJ;
+  const low=Math.max(0.5,cords*0.8).toFixed(1);
+  const high=(cords*1.25).toFixed(1);
+
+  document.getElementById('cordsNum').textContent=cords.toFixed(1);
+  document.getElementById('cordsRange').textContent=`Realistic range: ${low} – ${high} cords`;
+  document.getElementById('resultBig').className='result-big show';
+
+  const rows=[
+    ['Heated area',`${sqft} sq ft (${sqm.toFixed(0)} m²)`],
+    ['Climate zone multiplier',`×${zone}`],
+    ['Insulation multiplier',`×${insul}`],
+    ['Monthly heat demand',`${baseGJMonth.toFixed(1)} GJ/month`],
+    ['Heating season',`${season} months`],
+    ['Total heat demand',`${totalGJ.toFixed(1)} GJ`],
+    ['Wood use (${primary===1.0?'100':'~'+(primary*100|0)}% of heating)','—'],
+    ['Useful GJ per cord (seasoned)',`${usefulGJ.toFixed(1)} GJ`],
+    ['Cords needed',`${cords.toFixed(1)}`],
+  ];
+  document.getElementById('breakdownTable').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td style="text-align:right;font-weight:500">${r[1]}</td></tr>`).join('');
+  document.getElementById('breakdown').style.display='block';
+}
+</script>
+</body>
+</html>
