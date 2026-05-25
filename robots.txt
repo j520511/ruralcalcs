@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ruralcalcs.com/sitemap.xml
