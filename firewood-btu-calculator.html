@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firewood BTU Calculator by Species Canada — RuralCalcs</title>
+<meta name="description" content="Firewood BTU values and heat output by species for Canadian wood. Compare maple, birch, oak, ash, spruce, fir and more. Includes GJ per cord.">
+<link rel="canonical" href="https://ruralcalcs.com/firewood-btu-calculator.html">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fdf8f0;color:#2d2d2d;line-height:1.6}
+header{background:#1a472a;color:#fff;padding:1.4rem 1rem}
+header a{color:#a8d5b5;text-decoration:none;font-size:.9rem}
+header h1{font-size:1.7rem;font-weight:700;margin-top:.3rem}
+.wrap{max-width:760px;margin:2rem auto;padding:0 1.2rem}
+.card{background:#fff;border-radius:10px;padding:1.8rem;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:1.5rem}
+h2{font-size:1.15rem;font-weight:700;color:#1a472a;margin-bottom:1rem;border-bottom:2px solid #e8f5ee;padding-bottom:.5rem}
+.filters{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.filters input,.filters select{padding:.5rem .8rem;border:1.5px solid #d0ccc5;border-radius:6px;font-size:.9rem;background:#fafaf8}
+.filters input{flex:1;min-width:180px}
+.filters input:focus,.filters select:focus{outline:none;border-color:#1a472a}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+thead th{background:#1a472a;color:#fff;padding:.65rem .8rem;text-align:left;cursor:pointer;user-select:none}
+thead th:hover{background:#2d6a4f}
+thead th.sorted{background:#c8860a}
+td{padding:.55rem .8rem;border-bottom:1px solid #e8e4df;vertical-align:middle}
+tr:nth-child(even) td{background:#f5f2ee}
+.bar{height:10px;background:#1a472a;border-radius:3px;display:inline-block}
+.type-h{color:#1a472a;font-weight:600}
+.type-s{color:#6b4226;font-weight:600}
+.badge{display:inline-block;font-size:.72rem;padding:.1rem .45rem;border-radius:3px;font-weight:700}
+.badge-h{background:#e8f5ee;color:#1a472a}
+.badge-s{background:#f5e8d8;color:#6b4226}
+.legend{display:flex;gap:1.5rem;font-size:.82rem;margin-bottom:1rem;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:.35rem}
+nav{margin-top:2rem;padding-top:1rem;border-top:1px solid #e5e0d8;font-size:.88rem}
+nav a{color:#1a472a;text-decoration:none;margin-right:1rem}
+</style>
+</head>
+<body>
+<header>
+  <a href="/">← RuralCalcs</a>
+  <h1>🪵 Firewood BTU by Species</h1>
+</header>
+<div class="wrap">
+  <div class="card">
+    <h2>Canadian Firewood Species — Heat Output</h2>
+    <div class="legend">
+      <span><span class="badge badge-h">H</span> Hardwood</span>
+      <span><span class="badge badge-s">S</span> Softwood</span>
+    </div>
+    <div class="filters">
+      <input type="text" id="search" placeholder="Search species..." oninput="render()">
+      <select id="typeFilter" onchange="render()">
+        <option value="">All types</option>
+        <option value="H">Hardwood only</option>
+        <option value="S">Softwood only</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Species</th>
+          <th onclick="sortBy('type')">Type</th>
+          <th onclick="sortBy('gjCord')">GJ/cord ↕</th>
+          <th onclick="sortBy('mmbtu')">MMBtu/cord</th>
+          <th onclick="sortBy('gjCord')">Relative heat</th>
+          <th onclick="sortBy('weight')">Weight (kg/cord)</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div>
+  </div>
+  <div class="card">
+    <h2>How to Read This Table</h2>
+    <p style="font-size:.92rem;color:#555">GJ/cord values are for <strong>air-dried wood at ~20% moisture</strong> (about 1 year seasoned). Green wood contains 25–40% more water weight and delivers 20–35% less heat. Softwoods light easily and are great for shoulder seasons; hardwoods burn longer and produce more coals — best for overnight burns. All values per standard bush cord (4×4×8 ft = 128 cubic feet).</p>
+  </div>
+  <nav>
+    <a href="/wood-heat-cost-calculator.html">Heat Cost Calculator</a>
+    <a href="/cords-needed-calculator.html">Cords Needed</a>
+    <a href="/">All Calculators</a>
+  </nav>
+</div>
+<script>
+const SPECIES=[
+  {name:'Sugar Maple',type:'H',gjCord:30.7,weight:1900},
+  {name:'Yellow Birch',type:'H',gjCord:30.2,weight:1870},
+  {name:'White Ash',type:'H',gjCord:29.3,weight:1810},
+  {name:'Red Oak',type:'H',gjCord:29.1,weight:1800},
+  {name:'White Oak',type:'H',gjCord:27.7,weight:1715},
+  {name:'Beech',type:'H',gjCord:26.5,weight:1640},
+  {name:'Ironwood (Hornbeam)',type:'H',gjCord:31.2,weight:1930},
+  {name:'Shagbark Hickory',type:'H',gjCord:30.6,weight:1890},
+  {name:'Hop-hornbeam',type:'H',gjCord:30.5,weight:1880},
+  {name:'Red Maple',type:'H',gjCord:24.6,weight:1520},
+  {name:'Silver Maple',type:'H',gjCord:22.1,weight:1370},
+  {name:'White Birch (Paper)',type:'H',gjCord:22.4,weight:1385},
+  {name:'White Elm',type:'H',gjCord:24.5,weight:1515},
+  {name:'Basswood',type:'H',gjCord:16.8,weight:1040},
+  {name:'Trembling Aspen',type:'H',gjCord:17.8,weight:1100},
+  {name:'Large-tooth Aspen',type:'H',gjCord:17.7,weight:1095},
+  {name:'Tamarack (Eastern Larch)',type:'S',gjCord:20.8,weight:1290},
+  {name:'Red Pine',type:'S',gjCord:18.6,weight:1150},
+  {name:'Jack Pine',type:'S',gjCord:17.1,weight:1060},
+  {name:'Eastern White Pine',type:'S',gjCord:15.9,weight:985},
+  {name:'White Spruce',type:'S',gjCord:17.8,weight:1100},
+  {name:'Black Spruce',type:'S',gjCord:17.5,weight:1085},
+  {name:'Balsam Fir',type:'S',gjCord:16.8,weight:1040},
+  {name:'Eastern White Cedar',type:'S',gjCord:13.8,weight:855},
+];
+const MAX_GJ=Math.max(...SPECIES.map(s=>s.gjCord));
+let sortCol='gjCord',sortDir=-1;
+function sortBy(col){if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=-1;}render();}
+function render(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const tf=document.getElementById('typeFilter').value;
+  let data=SPECIES.filter(s=>{
+    if(tf&&s.type!==tf)return false;
+    if(q&&!s.name.toLowerCase().includes(q))return false;
+    return true;
+  });
+  data.sort((a,b)=>{
+    if(sortCol==='name')return sortDir*a.name.localeCompare(b.name);
+    if(sortCol==='type')return sortDir*a.type.localeCompare(b.type);
+    return sortDir*(a[sortCol]-b[sortCol]);
+  });
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML=data.map(s=>{
+    const barW=Math.round((s.gjCord/MAX_GJ)*120);
+    const badge=s.type==='H'?'<span class="badge badge-h">H</span>':'<span class="badge badge-s">S</span>';
+    return `<tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${badge}</td>
+      <td><strong>${s.gjCord.toFixed(1)}</strong></td>
+      <td>${(s.gjCord*0.9478).toFixed(1)}</td>
+      <td><span class="bar" style="width:${barW}px"></span></td>
+      <td>${s.weight.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+}
+render();
+</script>
+</body>
+</html>
